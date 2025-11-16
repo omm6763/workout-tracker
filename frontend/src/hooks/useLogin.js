@@ -10,12 +10,14 @@ export const useLogin = () => {
   const login = async (email, password) => {
     setIsLoading(true)
     setError(null)
+
     const res = await fetch(`${API_BASE}/api/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     })
     const json = await res.json()
+
     if (!res.ok) {
       setIsLoading(false)
       setError(json.error)
@@ -28,4 +30,5 @@ export const useLogin = () => {
 
   return { login, isLoading, error }
 }
+
 export default useLogin

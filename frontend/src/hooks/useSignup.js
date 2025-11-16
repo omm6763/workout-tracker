@@ -10,12 +10,14 @@ export const useSignup = () => {
   const signup = async (email, password) => {
     setIsLoading(true)
     setError(null)
+
     const res = await fetch(`${API_BASE}/api/user/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     })
     const json = await res.json()
+
     if (!res.ok) {
       setIsLoading(false)
       setError(json.error)
@@ -28,4 +30,5 @@ export const useSignup = () => {
 
   return { signup, isLoading, error }
 }
+
 export default useSignup

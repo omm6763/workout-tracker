@@ -25,8 +25,8 @@ export default function Home() {
   return (
     <div className="home">
       <div className="workouts">
-        {workouts && workouts.map((workout) => (
-          <WorkoutDetails key={workout._id} workout={workout} />
+        {workouts && workouts.map(w => (
+          <WorkoutDetails key={w._id} workout={w} />
         ))}
       </div>
       <WorkoutForm />

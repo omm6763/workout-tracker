@@ -6,75 +6,65 @@ import { API_BASE } from '../config'
 export default function WorkoutForm() {
   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
-
   const [title, setTitle] = useState('')
   const [load, setLoad] = useState('')
   const [reps, setReps] = useState('')
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
-
     if (!user) {
       setError('You must be logged in')
       return
     }
-
     const workout = { title, load, reps }
-
     const res = await fetch(`${API_BASE}/api/workouts`, {
       method: 'POST',
-      body: JSON.stringify(workout),
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${user.token}`
-      }
+      },
+      body: JSON.stringify(workout)
     })
     const json = await res.json()
-
     if (!res.ok) {
       setError(json.error)
       setEmptyFields(json.emptyFields || [])
+      return
     }
-    if (res.ok) {
-      setTitle('')
-      setLoad('')
-      setReps('')
-      setError(null)
-      setEmptyFields([])
-      dispatch({ type: 'CREATE_WORKOUT', payload: json })
-    }
+    setTitle('')
+    setLoad('')
+    setReps('')
+    setError(null)
+    setEmptyFields([])
+    dispatch({ type: 'CREATE_WORKOUT', payload: json })
   }
 
   return (
     <form className="create" onSubmit={handleSubmit}>
       <h3>Add a New Workout</h3>
-
       <label>Exercise Title:</label>
       <input
         type="text"
-        onChange={(e) => setTitle(e.target.value)}
         value={title}
+        onChange={e => setTitle(e.target.value)}
         className={emptyFields.includes('title') ? 'error' : ''}
       />
-
-      <label>Load (in kg):</label>
+      <label>Load (kg):</label>
       <input
         type="number"
-        onChange={(e) => setLoad(e.target.value)}
         value={load}
+        onChange={e => setLoad(e.target.value)}
         className={emptyFields.includes('load') ? 'error' : ''}
       />
-
       <label>Reps:</label>
       <input
         type="number"
-        onChange={(e) => setReps(e.target.value)}
         value={reps}
+        onChange={e => setReps(e.target.value)}
         className={emptyFields.includes('reps') ? 'error' : ''}
       />
-
       <button>Add Workout</button>
       {error && <div className="error">{error}</div>}
     </form>

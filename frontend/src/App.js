@@ -1,45 +1,28 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-
-// pages & components
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthContextProvider } from './context/AuthContext'
+import { WorkoutContextProvider } from './context/WorkoutContext'
+import Navbar from './components/Navbar'
 import Home from './pages/Home'
-import Navbar from './components/Navbar';
 import Login from './pages/Login'
 import Signup from './pages/Signup'
-import useAuthContext from './hooks/useAuthContext'
-
 
 function App() {
-  const { user } = useAuthContext()
-
   return (
-    <div className="App">
-      <BrowserRouter>
-
-        <Navbar />
-
-        <div className='pages'>
-          <Routes>
-
-            <Route
-              path="/"
-              element={user ? <Home /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/login"
-              element={!user ? <Login /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/signup"
-              element={!user ? <Signup /> : <Navigate to="/" />}
-            />
-
-          </Routes>
-
-        </div>
-
-      </BrowserRouter>
-    </div>
-  );
+    <AuthContextProvider>
+      <WorkoutContextProvider>
+        <BrowserRouter>
+          <Navbar />
+          <div className="pages">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </WorkoutContextProvider>
+    </AuthContextProvider>
+  )
 }
 
-export default App;
+export default App

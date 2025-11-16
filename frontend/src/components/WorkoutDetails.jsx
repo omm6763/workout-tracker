@@ -7,17 +7,13 @@ export default function WorkoutDetails({ workout }) {
   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
 
-  const handleClick = async () => {
+  const handleDelete = async () => {
     if (!user) return
-
     const res = await fetch(`${API_BASE}/api/workouts/${workout._id}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${user.token}`
-      }
+      headers: { Authorization: `Bearer ${user.token}` }
     })
     const json = await res.json()
-
     if (res.ok) {
       dispatch({ type: 'DELETE_WORKOUT', payload: json })
     }
@@ -37,7 +33,7 @@ export default function WorkoutDetails({ workout }) {
       <p>
         {formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}
       </p>
-      <span className="material-symbols-outlined" onClick={handleClick}>
+      <span className="material-symbols-outlined" onClick={handleDelete}>
         delete
       </span>
     </div>
