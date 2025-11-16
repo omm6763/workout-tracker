@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useAuthContext } from './useAuthContext'
-import { API_BASE } from '../config'
 
 export const useSignup = () => {
   const [error, setError] = useState(null)
@@ -10,19 +9,16 @@ export const useSignup = () => {
   const signup = async (email, password) => {
     setIsLoading(true)
     setError(null)
-
-    const res = await fetch(`${API_BASE}/api/user/signup`, {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE}/api/user/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     })
     const json = await res.json()
-
     if (!res.ok) {
       setIsLoading(false)
       setError(json.error)
-    }
-    if (res.ok) {
+    } else {
       localStorage.setItem('user', JSON.stringify(json))
       dispatch({ type: 'LOGIN', payload: json })
       setIsLoading(false)
@@ -31,3 +27,4 @@ export const useSignup = () => {
 
   return { signup, isLoading, error }
 }
+export default useSignup
