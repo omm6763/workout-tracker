@@ -9,13 +9,31 @@ const userRoutes = require('./routes/user')
 const app = express()
 
 app.use(express.json())
-app.use(cors({ origin: ['http://localhost:3000', 'http://127.0.0.1:3000'] }))
+app.use(cors({ 
+  origin: [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000',
+    'https://YOUR_VERCEL_APP.vercel.app'
+  ] 
+}))
 
 // Log every request (method + path)
-app.use((req, _res, next) => { console.log(req.method, req.path); next() })
+app.use((req, res, next) => {
+  console.log(req.path, req.method)
+  next()
+})
 
 // Health check (before DB)
-app.get('/api/health', (_req, res) => res.json({ ok: true }))
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Workout Tracker API',
+    status: 'Running',
+    endpoints: {
+      workouts: '/api/workouts',
+      auth: '/api/user'
+    }
+  })
+})
 
 const mongoUri = (process.env.MONGO_URI || '').trim()
 if (!mongoUri) { console.error('MONGO_URI missing'); process.exit(1) }
