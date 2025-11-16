@@ -1,8 +1,12 @@
 import { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 
-export default function useAuthContext() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw Error('useAuthContext must be used inside AuthContextProvider')
-  return ctx
+export const useAuthContext = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw Error('useAuthContext must be used inside an AuthContextProvider')
+  }
+  return context
 }
+// Optionally also add default export to keep old imports working:
+export default useAuthContext

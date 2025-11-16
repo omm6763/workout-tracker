@@ -1,4 +1,4 @@
-import useAuthContext from './useAuthContext'
+import { useAuthContext } from './useAuthContext'
 import { useWorkoutsContext } from './useWorkoutsContext'
 
 export default function useLogout() {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
-import useAuthContext from '../hooks/useAuthContext'
+import { useAuthContext } from '../hooks/useAuthContext'
 import { API_BASE } from '../config'
 
 export default function WorkoutForm() {

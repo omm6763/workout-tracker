@@ -1,5 +1,5 @@
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
-import useAuthContext from '../hooks/useAuthContext'
+import { useAuthContext } from '../hooks/useAuthContext'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { API_BASE } from '../config'
 
