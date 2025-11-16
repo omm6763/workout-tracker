@@ -6,18 +6,26 @@ export default function Signup() {
   const [password, setPassword] = useState('')
   const { signup, error, isLoading } = useSignup()
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    signup(email, password)
+    await signup(email, password)
   }
 
   return (
     <form className="signup" onSubmit={handleSubmit}>
       <h3>Sign Up</h3>
       <label>Email:</label>
-      <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+      <input 
+        type="email" 
+        onChange={(e) => setEmail(e.target.value)} 
+        value={email}
+      />
       <label>Password:</label>
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      <input 
+        type="password" 
+        onChange={(e) => setPassword(e.target.value)} 
+        value={password}
+      />
       <button disabled={isLoading}>Sign up</button>
       {error && <div className="error">{error}</div>}
     </form>

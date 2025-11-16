@@ -6,12 +6,16 @@ export default function Navbar() {
   const { logout } = useLogout()
   const { user } = useAuthContext()
 
-  const handleClick = () => logout()
+  const handleClick = () => {
+    logout()
+  }
 
   return (
     <header>
       <div className="container">
-        <Link to="/"><h1>Workout Buddy</h1></Link>
+        <Link to="/">
+          <h1>Workout Buddy</h1>
+        </Link>
         <nav>
           {user && (
             <div>
