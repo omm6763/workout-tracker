@@ -1,33 +1,36 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const workoutRouters = require('./routes/workouts');
+require('dotenv').config({ override: true })
 
-// express app
-const app = express();
-const port = process.env.PORT ;
+const express = require('express')
+const mongoose = require('mongoose')
+const cors = require('cors')
+const workoutsRoutes = require('./routes/workouts')
+const userRoutes = require('./routes/user')
 
-// middleware
-app.use(express.json()); 
-//If the request’s Content-Type header is application/json, automatically parse the JSON string into a JavaScript object and store it in req.body.
+const app = express()
 
-app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
-});
+app.use(express.json())
+app.use(cors({ origin: ['http://localhost:3000', 'http://127.0.0.1:3000'] }))
 
-// routes
-app.use('/api/workouts', workoutRouters);
+// Log every request (method + path)
+app.use((req, _res, next) => { console.log(req.method, req.path); next() })
 
-// connect to db
-console.log(" Trying to connect with:", process.env.MONGO_URI);
+// Health check (before DB)
+app.get('/api/health', (_req, res) => res.json({ ok: true }))
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  app.listen(port, () => {
-    console.log(`Connected to DB & listening on port : ${port}`);
-  });
-})
-.catch((error) => {
-  console.error(" DB connection error:", error.message);
-});
+const mongoUri = (process.env.MONGO_URI || '').trim()
+if (!mongoUri) { console.error('MONGO_URI missing'); process.exit(1) }
+if (/USER:PASS@CLUSTER/i.test(mongoUri)) {
+  console.error('MONGO_URI still contains placeholders'); process.exit(1)
+}
+const masked = mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//USER:PASS@')
+console.log('Connecting to:', masked)
+
+mongoose.connect(mongoUri)
+  .then(() => {
+    console.log('MongoDB connected')
+    app.use('/api/workouts', workoutsRoutes)
+    app.use('/api/user', userRoutes)
+    const PORT = process.env.PORT || 4000
+    app.listen(PORT, () => console.log('listening on port', PORT))
+  })
+  .catch(err => { console.error('Mongo connection error:', err); process.exit(1) })
