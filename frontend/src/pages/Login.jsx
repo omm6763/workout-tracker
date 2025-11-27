@@ -12,22 +12,34 @@ export default function Login() {
   }
 
   return (
-    <form className="login" onSubmit={handleSubmit}>
-      <h3>Log In</h3>
-      <label>Email:</label>
-      <input 
-        type="email" 
-        onChange={(e) => setEmail(e.target.value)} 
-        value={email}
-      />
-      <label>Password:</label>
-      <input 
-        type="password" 
-        onChange={(e) => setPassword(e.target.value)} 
-        value={password}
-      />
-      <button disabled={isLoading}>Log in</button>
-      {error && <div className="error">{error}</div>}
-    </form>
+    <div className="auth-container">
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <h3>Log In</h3>
+        
+        <label>Email address:</label>
+        <input 
+          type="email" 
+          onChange={(e) => setEmail(e.target.value)} 
+          value={email} 
+          placeholder="Enter your email"
+        />
+        
+        <label>Password:</label>
+        <input 
+          type="password" 
+          onChange={(e) => setPassword(e.target.value)} 
+          value={password} 
+          placeholder="Enter your password"
+        />
+
+        <button disabled={isLoading}>Log in</button>
+        
+        {error && <div className="error">{error}</div>}
+        
+        <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#666'}}>
+          Don't have an account? <a href="/signup" style={{color: '#1aac83', fontWeight: 'bold'}}>Sign up</a>
+        </p>
+      </form>
+    </div>
   )
 }

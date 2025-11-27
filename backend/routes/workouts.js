@@ -4,15 +4,20 @@ const {
   getWorkouts,
   getWorkout,
   deleteWorkout,
-  updateWorkout
+  updateWorkout,
+  getWorkoutStats 
 } = require('../controllers/workoutController')
 const requireAuth = require('../middleware/requireAuth')
 
-const router = express.Router()  
+const router = express.Router()
 
-// Protect all workout routes
+// require auth for all workout routes
 router.use(requireAuth)
 
+// 1. ANALYTICS ROUTE (Must be first!)
+router.get('/stats', getWorkoutStats)
+
+// 2. Standard Routes
 router.get('/', getWorkouts)
 router.get('/:id', getWorkout)
 router.post('/', createWorkout)

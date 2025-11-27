@@ -18,23 +18,23 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true)
+    if (!origin) return cb(null, true)          // allow curl / server-side
     if (allowedOrigins.includes(origin)) return cb(null, true)
     return cb(new Error('CORS blocked: ' + origin))
   },
   methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization']
 }))
-app.options('*', cors())
+app.options(/.*/, cors())
 
 // Request logger
-app.use((req, _res, next) => {
+app.use((req, res, next) => {
   console.log(req.method, req.path)
   next()
 })
 
 // Health
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
   res.json({
     message: 'Workout Tracker API',
     status: 'Running',
@@ -46,9 +46,7 @@ app.get('/', (_req, res) => {
 })
 
 const mongoUri = (process.env.MONGO_URI || '').trim()
-if (!mongoUri) {
-  console.error('MONGO_URI missing'); process.exit(1)
-}
+if (!mongoUri) { console.error('MONGO_URI missing'); process.exit(1) }
 const masked = mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//USER:PASS@')
 console.log('Connecting to:', masked)
 
