@@ -28,7 +28,7 @@ exports.getWorkouts = async (req, res) => {
   }
 }
 
-// 2. Get Analytics Stats (With IDs for Deletion)
+// 2. Get Analytics Stats (Enhanced with Volume & 1RM)
 exports.getWorkoutStats = async (req, res) => {
   const user_id = req.user._id;
 
@@ -44,17 +44,35 @@ exports.getWorkoutStats = async (req, res) => {
           ]
         } 
       },
+      // NEW: Calculate metrics for every document first
+      {
+        $addFields: {
+            // Volume = Load * Reps
+            volume: { $multiply: ["$load", "$reps"] },
+            // 1RM (Epley Formula) = Load * (1 + Reps/30)
+            est1RM: { 
+                $multiply: [
+                    "$load", 
+                    { $add: [1, { $divide: ["$reps", 30] }] } 
+                ]
+            }
+        }
+      },
       {
         $group: {
           _id: "$title",
           data: { 
             $push: { 
-              date: "$createdAt", 
+              date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
               load: "$load",
-              id: "$_id" // Include ID so we can delete it!
+              volume: "$volume", // Store calculated volume
+              oneRepMax: "$est1RM" // Store calculated 1RM
             } 
           },
-          maxLoad: { $max: "$load" }
+          // Keep track of absolute maxes for summary
+          maxLoad: { $max: "$load" },
+          maxVolume: { $max: "$volume" },
+          max1RM: { $max: "$est1RM" }
         }
       },
       { $sort: { "_id": 1 } }

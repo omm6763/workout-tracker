@@ -1,3 +1,4 @@
+
 /* Google font import */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
 
@@ -91,11 +92,11 @@ header a {
   background: var(--primary);
   color: white;
   border: 0;
-  padding: 10px 20px; /* Slightly reduced padding */
+  padding: 12px 24px;
   border-radius: 6px;
   font-family: "Poppins";
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1.1em;
   transition: 0.2s;
   font-weight: 500;
 }
@@ -132,7 +133,7 @@ header a {
 .home {
   display: grid;
   grid-template-columns: 3fr 1.2fr; /* Adjusted column ratio */
-  gap: 50px;
+  gap: 60px;
   align-items: start;
 }
 
@@ -172,19 +173,19 @@ header a {
   z-index: 10;
 }
 
-/* Sticky Workout Form - COMPACT */
+/* Sticky Workout Form - COMPACT VERSION */
 form.create {
   position: sticky;
-  top: 130px;
+  top: 110px; /* Closer to top */
   background: white;
-  padding: 25px; /* Reduced padding significantly */
+  padding: 25px; /* Reduced padding (was 40px) */
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Reduced gap */
-  max-height: calc(100vh - 150px); /* Ensure it fits */
+  gap: 12px; /* Reduced gap */
+  max-height: 85vh; /* Prevent overflowing viewport */
   overflow-y: auto;
 }
 form.create h3 {
@@ -195,21 +196,21 @@ form.create h3 {
   padding-bottom: 10px;
 }
 
-/* Inputs within form */
-form.create label {
+/* Inputs */
+label {
   display: block;
-  font-size: 1em; /* Smaller label */
+  font-size: 1rem; /* Smaller label text */
   font-weight: 500;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
-form.create input, form.create select {
+input, select {
   padding: 10px; /* Smaller input padding */
   margin-bottom: 15px;
   width: 100%;
   border: 1px solid #ddd;
   border-radius: 6px;
   box-sizing: border-box;
-  font-size: 0.95em;
+  font-size: 0.95em; /* Smaller input text */
   background: #fafafa;
 }
 input:focus, select:focus {
@@ -225,25 +226,10 @@ div.error {
   margin: 15px 0;
   font-size: 0.9em;
 }
-
-/* General Inputs (for other pages if needed) */
-label {
-    display: block;
-    font-size: 1.1em;
-    font-weight: 500;
-    margin-bottom: 5px;
+form button {
+    padding: 10px 20px; /* Compact button */
+    font-size: 1rem;
 }
-input, select {
-    padding: 14px;
-    margin-bottom: 20px;
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 1em;
-    background: #fafafa;
-}
-
 
 /* Chart Carousel */
 .chart-carousel {
@@ -282,15 +268,16 @@ input, select {
   display: flex;
   justify-content: center;
   margin-bottom: 40px;
-  gap: 15px;
+  gap: 10px;
   border-bottom: 2px solid #f1f1f1;
   padding-bottom: 25px;
+  flex-wrap: wrap;
 }
 .toggle-btn {
   background: transparent;
   border: none;
-  padding: 12px 30px;
-  font-size: 1.2rem;
+  padding: 10px 25px;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #888;
   cursor: pointer;
