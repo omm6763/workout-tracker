@@ -8,6 +8,7 @@ import Signup from './pages/Signup'
 import ChartsPage from './pages/ChartsPage'
 import CalculatorPage from './pages/CalculatorPage'
 import ExerciseGuidePage from './pages/ExerciseGuidePage'
+import PlannerPage from './pages/PlannerPage' // NEW IMPORT
 import Navbar from './components/Navbar'
 
 function App() {
@@ -34,6 +35,11 @@ function App() {
             <Route 
               path="/guide" 
               element={user ? <ExerciseGuidePage /> : <Navigate to="/login" />} 
+            />
+            {/* NEW ROUTE */}
+            <Route 
+              path="/planner" 
+              element={user ? <PlannerPage /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/login" 

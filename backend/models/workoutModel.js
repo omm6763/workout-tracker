@@ -15,9 +15,14 @@ const workoutSchema = new Schema({
     type: Number,
     required: true
   },
-  user_id: { type: require('mongoose').Schema.Types.ObjectId, ref: 'User', required: true }
-}, { timestamps: true })// when we add documents it will automatically add createdAt and updatedAt property for us 
-
-// create structure of a data to store by schema and model is apply that schema 
+  user_id: {
+    type: String,
+    required: true
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true })
 
 module.exports = mongoose.model('Workout', workoutSchema)

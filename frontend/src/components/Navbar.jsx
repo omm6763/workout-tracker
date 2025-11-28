@@ -14,8 +14,8 @@ export default function Navbar() {
   return (
     <header>
       <div className="container">
-        <Link to="/">
-          <h1>Workout Buddy</h1>
+        <Link to="/" style={{textDecoration: 'none'}}>
+          <h1 style={{fontSize: '2rem', margin: 0, color: '#333'}}>Workout Buddy</h1>
         </Link>
         <nav>
           {user && (
@@ -34,12 +34,20 @@ export default function Navbar() {
               >
                 Charts
               </Link>
-              
+
               <Link 
                 to="/calculator" 
                 className={`nav-btn ${location.pathname === '/calculator' ? 'active' : 'inactive'}`}
               >
                 Calculators
+              </Link>
+              
+              {/* Planner moved here */}
+              <Link 
+                to="/planner" 
+                className={`nav-btn ${location.pathname === '/planner' ? 'active' : 'inactive'}`}
+              >
+                Planner
               </Link>
 
               <Link 

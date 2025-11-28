@@ -1,15 +1,17 @@
 const Workout = require('../models/workoutModel')
 const mongoose = require('mongoose')
 
+// ... (getWorkouts, getWorkoutStats, getWorkout remain same) ...
+
 // 1. Get All Workouts (with pagination)
 exports.getWorkouts = async (req, res) => {
   const user_id = req.user._id
-  
   const page = Math.max(1, parseInt(req.query.page) || 1)
   const limit = Math.max(1, parseInt(req.query.limit) || 10)
   const skip = (page - 1) * limit
 
   try {
+    // Sort by createdAt descending (newest first)
     const workouts = await Workout.find({ user_id })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -28,34 +30,22 @@ exports.getWorkouts = async (req, res) => {
   }
 }
 
-// 2. Get Analytics Stats (Enhanced with Volume & 1RM)
+// 2. Get Analytics Stats
 exports.getWorkoutStats = async (req, res) => {
   const user_id = req.user._id;
-
   try {
     const objectId = new mongoose.Types.ObjectId(String(user_id));
-
     const stats = await Workout.aggregate([
       { 
         $match: { 
-          $or: [
-            { user_id: objectId },
-            { user_id: String(user_id) }
-          ]
+            $or: [{ user_id: objectId }, { user_id: String(user_id) }],
+            completed: true 
         } 
       },
-      // NEW: Calculate metrics for every document first
       {
         $addFields: {
-            // Volume = Load * Reps
             volume: { $multiply: ["$load", "$reps"] },
-            // 1RM (Epley Formula) = Load * (1 + Reps/30)
-            est1RM: { 
-                $multiply: [
-                    "$load", 
-                    { $add: [1, { $divide: ["$reps", 30] }] } 
-                ]
-            }
+            est1RM: { $multiply: ["$load", { $add: [1, { $divide: ["$reps", 30] }] }] }
         }
       },
       {
@@ -65,58 +55,50 @@ exports.getWorkoutStats = async (req, res) => {
             $push: { 
               date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
               load: "$load",
-              volume: "$volume", // Store calculated volume
-              oneRepMax: "$est1RM" // Store calculated 1RM
+              volume: "$volume",
+              oneRepMax: "$est1RM"
             } 
           },
-          // Keep track of absolute maxes for summary
-          maxLoad: { $max: "$load" },
-          maxVolume: { $max: "$volume" },
-          max1RM: { $max: "$est1RM" }
+          maxLoad: { $max: "$load" }
         }
       },
       { $sort: { "_id": 1 } }
     ]);
-    
     res.status(200).json(stats);
   } catch (error) {
-    console.error("[Analytics] Error:", error);
     res.status(400).json({ error: error.message });
   }
 }
 
-// 3. Get Single Workout
 exports.getWorkout = async (req, res) => {
   const { id } = req.params
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such workout' })
-  }
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: 'No such workout' })
   const workout = await Workout.findById(id)
-  if (!workout) {
-    return res.status(404).json({ error: 'No such workout' })
-  }
+  if (!workout) return res.status(404).json({ error: 'No such workout' })
   res.status(200).json(workout)
 }
 
-// 4. Create Workout
+// 4. Create Workout (UPDATED TO ACCEPT CREATED_AT)
 exports.createWorkout = async (req, res) => {
-  const { title, load, reps } = req.body
+  const { title, load, reps, completed, createdAt } = req.body // Added createdAt
 
   let emptyFields = []
   if (!title) emptyFields.push('title')
   if (!load) emptyFields.push('load')
   if (!reps) emptyFields.push('reps')
-  if (emptyFields.length > 0) {
-    return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
-  }
+  if (emptyFields.length > 0) return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
 
   try {
     const user_id = req.user._id
-    const currentMax = await Workout.findOne({ user_id, title }).sort({ load: -1 })
-    const isNewPR = !currentMax || load > currentMax.load
+    
+    // Create object with optional createdAt
+    const workoutData = { title, load, reps, user_id, completed: completed || false }
+    if (createdAt) {
+        workoutData.createdAt = new Date(createdAt) // Manually set date if provided
+    }
 
-    const workout = await Workout.create({ title, load, reps, user_id })
-    res.status(200).json({ ...workout._doc, isNewPR })
+    const workout = await Workout.create(workoutData)
+    res.status(200).json(workout)
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
@@ -125,25 +107,17 @@ exports.createWorkout = async (req, res) => {
 // 5. Delete Workout
 exports.deleteWorkout = async (req, res) => {
   const { id } = req.params
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such workout' })
-  }
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: 'No such workout' })
   const workout = await Workout.findOneAndDelete({ _id: id })
-  if (!workout) {
-    return res.status(400).json({ error: 'No such workout' })
-  }
+  if (!workout) return res.status(400).json({ error: 'No such workout' })
   res.status(200).json(workout)
 }
 
 // 6. Update Workout
 exports.updateWorkout = async (req, res) => {
   const { id } = req.params
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'No such workout' })
-  }
-  const workout = await Workout.findOneAndUpdate({ _id: id }, { ...req.body })
-  if (!workout) {
-    return res.status(400).json({ error: 'No such workout' })
-  }
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: 'No such workout' })
+  const workout = await Workout.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
+  if (!workout) return res.status(400).json({ error: 'No such workout' })
   res.status(200).json(workout)
 }
