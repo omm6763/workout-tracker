@@ -41,6 +41,10 @@ app.use('/api/user', userRoutes)
 app.use('/api/plans', planRoutes)
 app.use('/api/saved-workouts', savedWorkoutRoutes)
 
+app.get('/', (req, res) => {
+  res.send('API is running successfully!')
+})
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(process.env.PORT, () => {
